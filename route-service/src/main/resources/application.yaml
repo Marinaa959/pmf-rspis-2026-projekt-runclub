@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: route-service
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+server:
+  port: 8082
+
+route-service:
+  ors:
+    base-url: https://api.openrouteservice.org
+    api-key: ${ORS_API_KEY}
+    profile: foot-walking
+    timeout-in-seconds: 10
+
+management:
+  server:
+    port: 8083
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,75 @@
+# Svi klubovi
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/clubs
+
+# Kreiraj klub (201)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs -H "Content-Type: application/json" -d '{"name":"Zagreb Runners","city":"Zagreb","level":"INTERMEDIATE","description":"Tjedna grupna trcanja oko Jaruna."}'
+
+# Kreiraj drugi klub (201)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs -H "Content-Type: application/json" -d '{"name":"Sljeme Trail Club","city":"Zagreb","level":"ADVANCED","description":"Trail trcanje po Medvednici."}'
+
+# Klub po id-u (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/clubs/1
+
+# Neispravan klub bez imena (ocekivano 400)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs -H "Content-Type: application/json" -d '{"city":"Split","level":"BEGINNER"}'
+
+# Duplikat imena (ocekivano 409)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs -H "Content-Type: application/json" -d '{"name":"Zagreb Runners","city":"Zagreb","level":"BEGINNER"}'
+
+# Nepostojeci klub (ocekivano 404)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/clubs/9999
+
+
+# ==================== TRKACI ====================
+
+# Registriraj trkaca (201)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/runners -H "Content-Type: application/json" -d '{"id":"marina-k","firstName":"Marina","lastName":"Kovac","email":"marina@example.com","preferredLevel":"INTERMEDIATE"}'
+
+# Trkac po id-u (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/runners/marina-k
+
+# Neispravan id, velika slova (ocekivano 400)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/runners/INVALID-ID
+
+# Promjena id-a kroz update (ocekivano 409)
+curl -s -w '\n[HTTP %{http_code}]\n' -X PUT http://localhost:8080/runners/marina-k -H "Content-Type: application/json" -d '{"id":"netko-drugi","firstName":"Marina","lastName":"Kovac","preferredLevel":"INTERMEDIATE"}'
+
+
+# ==================== EVENTI (s rutom) ====================
+
+# Kreiraj event - racuna rutu preko route-servicea (201)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs/1/events -H "Content-Type: application/json" -d '{"name":"Jarun 10k","startTime":"2026-10-11T09:00:00","route":[{"lat":45.7818,"lng":15.9182},{"lat":45.7793,"lng":15.9308},{"lat":45.7752,"lng":15.9224}]}'
+
+# Svi eventi (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/events
+
+# Event po id-u - vidi distanceMeters i elevationGainMeters (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/events/1
+
+# Eventi jednog kluba (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/clubs/1/events
+
+# Premalo tocaka rute (ocekivano 400)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/clubs/1/events -H "Content-Type: application/json" -d '{"name":"Prekratka ruta","startTime":"2026-10-11T09:00:00","route":[{"lat":45.78,"lng":15.91}]}'
+
+
+# ==================== PRIJAVE ====================
+
+# Prijava na event (201)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/events/1/signups -H "Content-Type: application/json" -d '{"runnerId":"marina-k"}'
+
+# Dvostruka prijava (ocekivano 409)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/events/1/signups -H "Content-Type: application/json" -d '{"runnerId":"marina-k"}'
+
+# Prijave na event (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/events/1/signups
+
+# Prijave jednog trkaca (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/runners/marina-k/signups
+
+
+# ==================== PREPORUKE (GenAI) ====================
+
+# Preporuka klubova za trkaca (200)
+curl -s -w '\n[HTTP %{http_code}]\n' http://localhost:8080/runners/marina-k/recommendations
+

@@ -1,0 +1,11 @@
+management:
+  health:
+    redis:
+      enabled: false      # ne provjeravam Redis health u testu
+
+route-service:
+  ors:
+    base-url: http://localhost:9999
+    api-key: test-key
+    profile: foot-walking
+    timeout-in-seconds: 1

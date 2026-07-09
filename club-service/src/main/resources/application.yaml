@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: club-service
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:runclub}
+    username: ${POSTGRES_USER:runclub}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update        # Hibernate sam kreira/ažurira shemu
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: "https://ibuni.openai.azure.com/openai/v1/"
+      chat:
+        model: "gpt-5.4-mini"
+        deployment-name: "gpt-5.4-mini"
+
+server:
+  port: 8080
+
+club-service:
+  route-service:
+    base-url: ${ROUTE_SERVICE_URL:http://localhost:8082}
+    timeout-in-seconds: 5
+
+springdoc:
+  api-docs:
+    path: /openapi
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,11 @@
+# Izracun rute (200)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/routes -H "Content-Type: application/json" -d '{"coordinates":[{"lat":45.7818,"lng":15.9182},{"lat":45.7793,"lng":15.9308},{"lat":45.7752,"lng":15.9224}]}'
+
+# Isti zahtjev ponovo - drugi put dolazi IZ REDIS CACHEA (200)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/routes -H "Content-Type: application/json" -d '{"coordinates":[{"lat":45.7818,"lng":15.9182},{"lat":45.7793,"lng":15.9308},{"lat":45.7752,"lng":15.9224}]}'
+
+# Premalo tocaka (ocekivano 400)
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST http://localhost:8080/routes -H "Content-Type: application/json" -d '{"coordinates":[{"lat":45.7818,"lng":15.9182}]}'
+
+# cache
+docker compose exec redis redis-cli KEYS '*'
